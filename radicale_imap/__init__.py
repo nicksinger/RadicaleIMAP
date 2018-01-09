@@ -43,11 +43,9 @@ class Auth(BaseAuth):
         if self.configuration.has_option("auth", "imap_secure"):
             secure = self.configuration.getboolean("auth", "imap_secure")
         try:
-            if ":" in host:
-                address, port = host.rsplit(":", maxsplit=1)
-            else:
-                address, port = host, 143
-            address, port = address.strip("[] "), int(port)
+            address, port = host.split(":", maxsplit=1) or (host, imaplib.IMAP4_PORT)
+            address = address.strip()
+            port = int(port)
         except ValueError as e:
             raise RuntimeError(
                 "Failed to parse address %r: %s" % (host, e)) from e
